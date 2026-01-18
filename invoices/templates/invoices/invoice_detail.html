@@ -1,0 +1,121 @@
+<!-- templates/invoices/invoice_detail.html -->
+{% extends 'invoices/base.html' %}
+
+{% block title %}Invoice {{ invoice.invoice_number }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between mb-3">
+        <a href="{% url 'invoice_list' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
+        <div>
+            <a href="{% url 'invoice_update' invoice.pk %}" class="btn btn-warning">
+                <i class="fas fa-edit"></i> Edit
+            </a>
+            <a href="{% url 'invoice_pdf' invoice.pk %}" class="btn btn-success" target="_blank">
+                <i class="fas fa-file-pdf"></i> View PDF
+            </a>
+            <a href="{% url 'invoice_pdf' invoice.pk %}?download=1" class="btn btn-info">
+                <i class="fas fa-download"></i> Download PDF
+            </a>
+            <button onclick="window.print()" class="btn btn-primary">
+                <i class="fas fa-print"></i> Print
+            </button>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-dark text-white"></div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <i class="far fa-building text-danger fa-4x"></i>
+                    <h4 class="mt-3">{{ invoice.company.name }}</h4>
+                    <p class="mb-1">{{ invoice.company.address|linebreaks }}</p>
+                    <p class="mb-1">{{ invoice.company.phone }}</p>
+                    <p>{{ invoice.company.email }}</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <h2 class="text-uppercase text-danger">Invoice</h2>
+                    <p class="mb-1"><strong>Invoice #:</strong> {{ invoice.invoice_number }}</p>
+                    <p class="mb-1"><strong>Date:</strong> {{ invoice.date_created|date:"M d, Y" }}</p>
+                    <p><strong>Due Date:</strong> {{ invoice.date_due|date:"M d, Y" }}</p>
+                </div>
+            </div>
+
+            <hr>
+
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <h5>Bill To:</h5>
+                    <p class="mb-1"><strong>{{ invoice.customer.name }}</strong></p>
+                    <p class="mb-1">{{ invoice.customer.address|linebreaks }}</p>
+                    <p class="mb-1">{{ invoice.customer.phone }}</p>
+                    <p>{{ invoice.customer.email }}</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <span class="badge bg-{% if invoice.status == 'paid' %}success{% elif invoice.status == 'sent' %}info{% elif invoice.status == 'draft' %}secondary{% else %}danger{% endif %} fs-6">
+                        {{ invoice.get_status_display }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="table-responsive mt-4">
+                <table class="table table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Description</th>
+                            <th class="text-end">Quantity</th>
+                            <th class="text-end">Unit Price</th>
+                            <th class="text-end">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in invoice.items.all %}
+                        <tr>
+                            <td>{{ item.description }}</td>
+                            <td class="text-end">{{ item.quantity }}</td>
+                            <td class="text-end">${{ item.unit_price|floatformat:2 }}</td>
+                            <td class="text-end">${{ item.total|floatformat:2 }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6"></div>
+                <div class="col-md-6">
+                    <table class="table table-borderless">
+                        <tr>
+                            <td class="text-end"><strong>Subtotal:</strong></td>
+                            <td class="text-end">${{ invoice.subtotal|floatformat:2 }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-end">Discount:</td>
+                            <td class="text-end">${{ invoice.discount_amount|floatformat:2 }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-end">Shipping:</td>
+                            <td class="text-end">${{ invoice.shipping_amount|floatformat:2 }}</td>
+                        </tr>
+                        <tr class="table-active">
+                            <td class="text-end"><h5>Total:</h5></td>
+                            <td class="text-end"><h5 class="text-danger">${{ invoice.total|floatformat:2 }}</h5></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            {% if invoice.notes %}
+            <div class="mt-4">
+                <h6>Notes:</h6>
+                <p>{{ invoice.notes }}</p>
+            </div>
+            {% endif %}
+        </div>
+        <div class="card-footer bg-dark"></div>
+    </div>
+</div>
+{% endblock %}
