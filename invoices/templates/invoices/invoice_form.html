@@ -1,0 +1,108 @@
+<!-- templates/invoices/invoice_form.html -->
+{% extends 'invoices/base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h4 class="mb-0">{{ title }}</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Invoice Number</label>
+                                {{ form.invoice_number }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Due Date</label>
+                                {{ form.date_due }}
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Company</label>
+                                {{ form.company }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Customer</label>
+                                {{ form.customer }}
+                            </div>
+                        </div>
+
+                        <h5 class="mt-4 mb-3">Invoice Items</h5>
+                        {{ formset.management_form }}
+                        
+                        <div id="formset-container">
+                            {% for item_form in formset %}
+                            <div class="formset-row border p-3 mb-3">
+                                {{ item_form.id }}
+                                <div class="row">
+                                    <div class="col-md-5">
+                                        <label class="form-label">Description</label>
+                                        {{ item_form.description }}
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Quantity</label>
+                                        {{ item_form.quantity }}
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Unit Price</label>
+                                        {{ item_form.unit_price }}
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Delete</label>
+                                        {{ item_form.DELETE }}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="row mb-3 mt-4">
+                            <div class="col-md-4">
+                                <label class="form-label">Discount Amount</label>
+                                {{ form.discount_amount }}
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Shipping Amount</label>
+                                {{ form.shipping_amount }}
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Status</label>
+                                {{ form.status }}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Notes</label>
+                            {{ form.notes }}
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'invoice_list' %}" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Save Invoice</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    input, select, textarea {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+</style>
+{% endblock %}

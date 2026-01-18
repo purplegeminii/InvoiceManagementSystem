@@ -1,0 +1,303 @@
+<!-- templates/invoices/invoice_pdf.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice {{ invoice.invoice_number }}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 1cm;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #333;
+        }
+        
+        .card {
+            max-width: 800px;
+            margin: 0 auto;
+            border: 1px solid #dee2e6;
+        }
+        
+        .card-header {
+            background-color: #000;
+            height: 20px;
+        }
+        
+        .card-body {
+            padding: 40px;
+        }
+        
+        .card-footer {
+            background-color: #000;
+            height: 20px;
+        }
+        
+        .container {
+            width: 100%;
+        }
+        
+        .row {
+            width: 100%;
+            display: table;
+            clear: both;
+            margin-bottom: 20px;
+        }
+        
+        .col-xl-12 {
+            width: 100%;
+        }
+        
+        .float-start {
+            float: left;
+        }
+        
+        .float-end {
+            float: right;
+        }
+        
+        .text-danger {
+            color: #dc3545;
+        }
+        
+        .fa-building {
+            font-size: 72px;
+            display: inline-block;
+            width: 72px;
+            height: 72px;
+            background-color: #dc3545;
+            text-align: center;
+            line-height: 72px;
+            color: white;
+        }
+        
+        .fa-building:before {
+            content: "🏢";
+        }
+        
+        .list-unstyled {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .list-unstyled li {
+            margin: 5px 0;
+        }
+        
+        .list-unstyled li:first-child {
+            font-size: 30px;
+            color: #dc3545;
+            font-weight: 400;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        .text-uppercase {
+            text-transform: uppercase;
+        }
+        
+        .mt-3 {
+            margin-top: 20px;
+        }
+        
+        h3 {
+            font-size: 40px;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .invoice-number {
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        table thead {
+            background-color: #f8f9fa;
+        }
+        
+        table th {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 2px solid #dee2e6;
+            font-weight: bold;
+        }
+        
+        table td {
+            padding: 12px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .fa-dollar-sign:before {
+            content: "$";
+        }
+        
+        .mx-3 {
+            margin-left: 20px;
+            margin-right: 20px;
+        }
+        
+        .col-xl-8 {
+            width: 66.666667%;
+            float: right;
+        }
+        
+        .me-0 {
+            margin-right: 0;
+        }
+        
+        .me-3 {
+            margin-right: 20px;
+        }
+        
+        .me-5 {
+            margin-right: 40px;
+        }
+        
+        hr {
+            border: 0;
+            border-top: 1px solid #dee2e6;
+            margin: 20px 0;
+            clear: both;
+        }
+        
+        .total-section {
+            clear: both;
+            margin-top: 20px;
+        }
+        
+        .total-amount {
+            font-size: 30px;
+            color: #dc3545;
+            font-weight: 400;
+            text-align: right;
+            margin-left: 60px;
+        }
+        
+        .fw-bold {
+            font-weight: bold;
+        }
+        
+        .text-muted {
+            color: #6c757d;
+        }
+        
+        .mt-2 {
+            margin-top: 10px;
+        }
+        
+        .mb-5 {
+            margin-bottom: 30px;
+        }
+        
+        .clearfix::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="card-header"></div>
+        <div class="card-body">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <i class="fa-building text-danger float-start"></i>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xl-12">
+                        <ul class="list-unstyled float-end">
+                            <li>{{ invoice.company.name }}</li>
+                            <li>{{ invoice.company.address|striptags|linebreaksbr }}</li>
+                            <li>{{ invoice.company.phone }}</li>
+                            <li>{{ invoice.company.email }}</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="row text-center clearfix">
+                    <h3 class="text-uppercase text-center mt-3">Invoice</h3>
+                    <p class="invoice-number">{{ invoice.invoice_number }}</p>
+                </div>
+
+                <div class="row mx-3">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Description</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in invoice.items.all %}
+                            <tr>
+                                <td>{{ item.description }}</td>
+                                <td><i class="fa-dollar-sign"></i> {{ item.total|floatformat:2 }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="row clearfix">
+                    <div class="col-xl-8">
+                        <ul class="list-unstyled float-end me-0">
+                            <li>
+                                <span class="me-3 float-start">Total Amount:</span>
+                                <i class="fa-dollar-sign"></i> {{ invoice.subtotal|floatformat:2 }}
+                            </li>
+                            <li>
+                                <span class="me-5">Discount:</span>
+                                <i class="fa-dollar-sign"></i> {{ invoice.discount_amount|floatformat:2 }}
+                            </li>
+                            <li>
+                                <span class="float-start" style="margin-right: 35px;">Shippment:</span>
+                                <i class="fa-dollar-sign"></i> {{ invoice.shipping_amount|floatformat:2 }}
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="row total-section clearfix">
+                    <div class="col-xl-8">
+                        <p class="total-amount">
+                            Total: <span><i class="fa-dollar-sign"></i> {{ invoice.total|floatformat:2 }}</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row mt-2 mb-5">
+                    <p class="fw-bold">Date: <span class="text-muted">{{ invoice.date_created|date:"d F Y" }}</span></p>
+                    <p class="fw-bold mt-3">Signature:</p>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer"></div>
+    </div>
+</body>
+</html>
